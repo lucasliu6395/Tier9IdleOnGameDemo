@@ -103,13 +103,23 @@ namespace Tier9.UI
                     bool isHere = ch.task == TaskType.Combat && ch.taskTargetId == zone.id;
                     if (isHere)
                     {
-                        var here = Text("⚔ Fighting here", "active-tag");
+                        var here = Text("⚔ You are here", "active-tag");
                         card.Add(here);
-                        card.Add(new Button(() => Gm.AssignTask(ch, TaskType.Idle, "")) { text = "Return to Town" });
+                        card.Add(new Button(() =>
+                        {
+                            Gm.TravelTo(ch, "town");
+                            UiRoot.I.CloseMenu();
+                        })
+                        { text = "Return to Town" });
                     }
                     else
                     {
-                        var fight = new Button(() => Gm.AssignTask(ch, TaskType.Combat, zone.id)) { text = "AFK Fight Here" };
+                        var fight = new Button(() =>
+                        {
+                            Gm.TravelTo(ch, zone.id);
+                            UiRoot.I.CloseMenu();
+                        })
+                        { text = "Travel Here" };
                         fight.AddToClassList("btn-primary");
                         card.Add(fight);
                     }

@@ -1,10 +1,15 @@
 # Tier9 Idle — an IdleOn-style demo
 
-A small, self-contained Unity demo inspired by *Legends of Idleon*: create up to
-**3 characters**, assign each one to **AFK combat** or **gathering skills**, and
-they keep earning XP, coins, and loot in real time — **including while the game
-is closed**. Spend the haul in town on crafting, shop gear, and account-wide
+A small, self-contained Unity demo inspired by *Legends of Idleon*: walk your
+2D character through **side-scrolling platform maps** with roaming monsters,
+fight with manual attacks, mine and chop at resource nodes, and hop between
+maps through portals. Up to **3 characters** — whoever you're not controlling
+keeps earning via AFK simulation in real time, **including while the game is
+closed**. Spend the haul in town on crafting, shop gear, and account-wide
 **stamp** upgrades.
+
+**Controls:** A/D or ←/→ move · Space/W jump · **F attack** · **E interact**
+(portals, town stations, resource nodes) · Esc closes menus.
 
 All mechanics, names, and content are original; no IdleOn assets are used.
 
@@ -26,11 +31,12 @@ to maintain.
 
 | System | What it does |
 | --- | --- |
-| **AFK combat** (World tab) | 4 zones with rising monster HP. Kill rate is derived from your damage; kills grant class XP, coins, and material drops. Kill quotas unlock the next zone per character. |
-| **Skilling** (Skills tab) | Mining and Choppin nodes. Gather rate is derived from skill efficiency; higher skill levels and better tools mean faster gathering. |
-| **Characters** | 3 slots, each character AFKs on its own task simultaneously. Beginners pick Warrior / Archer / Mage at level 5. 1 talent point per level. |
-| **Town** | Anvil (craft gear from materials), Shop (buy basics, sell loot), Stamps (permanent account-wide % bonuses with scaling costs). |
-| **Offline gains** | On launch, elapsed real time (up to 24h) runs through the *same* simulation as live play, then a claim popup summarizes what everyone earned. |
+| **The world** | 10 walkable maps: Spore Town (hub with Anvil/Shop/Stamps stations), 4 combat zones, the Glowcap Lair boss arena, and 4 skilling spots — all connected by portals. Where your character stands *is* their AFK task. |
+| **Active combat** | Attack with F; kills grant class XP, coins, and drops at **full rate** (AFK earns 60%). Basic mobs are harmless to touch; bigger ones (Pebblits, Glowcaps) deal contact damage, and the **Mother Glowcap** boss chases you. Kill quotas unlock the next zone's portal per character. |
+| **Skilling** | Press E at a mining/choppin node to auto-swing. Gather rate scales with skill level, tools, and stats. Deeper nodes need higher skill levels. |
+| **Characters** | 3 slots; you control one while the others AFK at their own locations simultaneously. Pick a name + appearance at creation; Beginners choose Warrior / Archer / Mage at level 5. 1 talent point per level. |
+| **Town** | Anvil (craft gear from materials), Shop (buy basics, sell loot), Stamps (permanent account-wide % bonuses with scaling costs) — walk up and press E, or use the Town menu. |
+| **Offline gains** | On launch, elapsed real time (up to 24h) runs through the *same* simulation code as AFK play, then a claim popup summarizes what everyone earned. |
 
 Tip: the **DEV** button (top-right) opens dev tools with time skips (+1m/+1h/+8h)
 so you can demo AFK progression instantly, plus a save reset.
@@ -41,7 +47,10 @@ Drop images into `Assets/Resources/Sprites/`, named after the content id
 (e.g. `puffshroom.png`). They import as sprites automatically and replace the
 generated placeholder squares. Ids:
 
-- **Monsters:** `puffshroom`, `hopper`, `pebblit`, `glowcap`
+- **Monsters:** `puffshroom`, `hopper`, `pebblit`, `glowcap`, `mother_glowcap` (boss)
+- **Player looks:** `player_a` … `player_d` (add more with any `player_*` name — they appear in character creation automatically)
+- **World:** `tile_ground`, `tile_platform`, `portal`, `station_anvil`, `station_shop`, `station_stamps`
+- **Resource nodes:** `copper_vein`, `iron_vein`, `oak_tree`, `birch_tree`
 - **Materials:** `puff_spore`, `hopper_leg`, `pebble_shard`, `glow_dust`, `copper_ore`, `iron_ore`, `oak_log`, `birch_log`
 - **Weapons:** `stick`, `wooden_sword`, `copper_sword`, `iron_blade`
 - **Armor:** `spore_vest`, `hopper_tunic`, `pebble_plate`
@@ -54,11 +63,12 @@ generated placeholder squares. Ids:
 ```
 Assets/Scripts/
   Core/     GameManager (tick loop, actions), AccountState, SaveSystem, Fmt
-  Sim/      AfkSimulator (one code path for live + offline), StatCalculator, XpCurve
-  Content/  ContentDatabase — ALL game content/balance lives here
-  UI/       UI Toolkit screens, built from code + Resources/UI/game.uss
-Assets/Tests/EditMode/   simulation tests
-Assets/Editor/           asset bootstrap (PanelSettings), sprite import rules
+  Sim/      AfkSimulator (one reward path for live + AFK + offline), StatCalculator, XpCurve
+  Content/  ContentDatabase — ALL game content/balance lives here (incl. map layouts)
+  World/    platformer layer: maps, player controller, enemies, portals, stations, nodes
+  UI/       UI Toolkit chrome/HUD/menus, built from code + Resources/UI/game.uss
+Assets/Tests/EditMode/   simulation + content integrity tests
+Assets/Editor/           asset bootstrap (PanelSettings, URP, input actions, scene)
 ```
 
 Balance tuning is all in `Assets/Scripts/Content/ContentDatabase.cs` (monsters,

@@ -30,6 +30,7 @@ namespace Tier9.Core
     {
         public string name = "Hero";
         public string classId = "beginner";
+        public string spriteId = "";   // appearance chosen at creation ("player_*")
         public int level = 1;
         public double xp;
 
@@ -197,9 +198,13 @@ namespace Tier9.Core
             };
         }
 
-        public static CharacterState CreateCharacter(string name)
+        public static CharacterState CreateCharacter(string name, string spriteId = "")
         {
-            return new CharacterState { name = string.IsNullOrWhiteSpace(name) ? "Hero" : name.Trim() };
+            return new CharacterState
+            {
+                name = string.IsNullOrWhiteSpace(name) ? "Hero" : name.Trim(),
+                spriteId = spriteId ?? ""
+            };
         }
     }
 }

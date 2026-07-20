@@ -22,6 +22,32 @@ namespace Tier9.UI
             return sprite;
         }
 
+        /// <summary>A flat single-color 1x1-unit sprite (HP bars, tinted quads).</summary>
+        public static Sprite Solid(Color color)
+        {
+            string key = "solid_" + ColorUtility.ToHtmlStringRGBA(color);
+            if (Cache.TryGetValue(key, out var sprite) && sprite != null) return sprite;
+            var tex = new Texture2D(4, 4, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+            var pixels = new Color[16];
+            for (int i = 0; i < pixels.Length; i++) pixels[i] = color;
+            tex.SetPixels(pixels);
+            tex.Apply();
+            sprite = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 4);
+            Cache[key] = sprite;
+            return sprite;
+        }
+
+        /// <summary>Selectable player appearances: any user sprite named player_* plus generated fallbacks.</summary>
+        public static System.Collections.Generic.List<string> PlayerSpriteIds()
+        {
+            var ids = new System.Collections.Generic.List<string>();
+            foreach (var s in Resources.LoadAll<Sprite>("Sprites"))
+                if (s.name.StartsWith("player_") && !ids.Contains(s.name)) ids.Add(s.name);
+            foreach (var fallback in new[] { "player_a", "player_b", "player_c", "player_d" })
+                if (!ids.Contains(fallback)) ids.Add(fallback);
+            return ids;
+        }
+
         static Sprite GeneratePlaceholder(string id)
         {
             int hash = 23;

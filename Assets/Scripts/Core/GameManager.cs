@@ -34,9 +34,15 @@ namespace Tier9.Core
 
         public AccountState Account { get; private set; }
 
+        /// <summary>The character currently controlled in the world; skipped by the AFK tick
+        /// because they earn through live gameplay instead.</summary>
+        public CharacterState LiveCharacter { get; set; }
+
         public event Action StateChanged;
         public event Action<AfkReport> AfkCompleted;
         public event Action<string> Toast;
+        /// <summary>Fired when a character's map/task changes and the world should rebuild.</summary>
+        public event Action TravelChanged;
 
         const float SaveIntervalSeconds = 20f;
         float _tickAccum;
@@ -50,6 +56,7 @@ namespace Tier9.Core
             DontDestroyOnLoad(go);
             go.AddComponent<GameManager>();
             go.AddComponent<Tier9.UI.UiRoot>();
+            go.AddComponent<Tier9.World.WorldRunner>();
         }
 
         void Awake()
@@ -76,7 +83,10 @@ namespace Tier9.Core
             {
                 _tickAccum -= 1f;
                 foreach (var ch in Account.characters)
+                {
+                    if (ch == LiveCharacter) continue;
                     AfkSimulator.Simulate(Account, ch, 1.0);
+                }
                 ticked = true;
             }
             if (ticked) NotifyChanged();
@@ -123,16 +133,19 @@ namespace Tier9.Core
         public void SelectCharacter(int index)
         {
             if (index < 0 || index >= Account.characters.Count) return;
+            if (Account.selectedCharacter == index) return;
             Account.selectedCharacter = index;
+            TravelChanged?.Invoke();
             NotifyChanged();
         }
 
-        public bool CreateCharacter(string name)
+        public bool CreateCharacter(string name, string spriteId = "")
         {
             if (Account.characters.Count >= AccountState.MaxCharacters) return false;
-            Account.characters.Add(AccountState.CreateCharacter(name));
+            Account.characters.Add(AccountState.CreateCharacter(name, spriteId));
             Account.selectedCharacter = Account.characters.Count - 1;
             SaveSystem.Save(Account);
+            TravelChanged?.Invoke();
             NotifyChanged();
             return true;
         }
@@ -141,6 +154,41 @@ namespace Tier9.Core
         {
             ch.SetTask(task, targetId);
             SaveSystem.Save(Account);
+            NotifyChanged();
+        }
+
+        /// <summary>The walkable map a character is on, derived from their task ("where you stand is what you do").</summary>
+        public static string MapIdForCharacter(CharacterState ch)
+        {
+            switch (ch.task)
+            {
+                case TaskType.Combat: return ContentDatabase.Map(ch.taskTargetId) != null ? ch.taskTargetId : "town";
+                case TaskType.Mining:
+                case TaskType.Choppin: return ContentDatabase.Map(ch.taskTargetId) != null ? ch.taskTargetId : "town";
+                default: return "town";
+            }
+        }
+
+        /// <summary>Move a character to a map; their AFK task follows their location.</summary>
+        public void TravelTo(CharacterState ch, string mapId)
+        {
+            var map = ContentDatabase.Map(mapId);
+            if (map == null) return;
+            if (map.IsCombat)
+            {
+                ch.SetTask(TaskType.Combat, mapId);
+            }
+            else if (map.IsSkill)
+            {
+                var node = ContentDatabase.Node(map.nodeId);
+                ch.SetTask(node.skill == SkillType.Mining ? TaskType.Mining : TaskType.Choppin, map.nodeId);
+            }
+            else
+            {
+                ch.SetTask(TaskType.Idle, "");
+            }
+            SaveSystem.Save(Account);
+            TravelChanged?.Invoke();
             NotifyChanged();
         }
 

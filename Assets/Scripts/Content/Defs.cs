@@ -39,8 +39,12 @@ namespace Tier9.Content
         public double xp;
         public double coinAvg;
         public string dropItemId;
-        public double dropChance;   // average drops per kill
-        public double reqDefense;   // below this, kill rate is penalized
+        public double dropChance;    // average drops per kill
+        public double reqDefense;    // below this, kill rate is penalized
+        public double contactDamage; // 0 = harmless to touch (basic mobs)
+        public bool isBoss;          // bigger sprite, chases the player, slower respawn
+        public float moveSpeed = 1.2f;
+        public float spriteScale = 1f;
     }
 
     public class ZoneDef
@@ -112,5 +116,60 @@ namespace Tier9.Content
         public double baseStr, baseAgi, baseWis, baseLuk;
         public double growStr, growAgi, growWis, growLuk;
         public List<string> talentIds = new List<string>();
+    }
+
+    // ---- Walkable platformer maps ----
+
+    public class PlatformSpec
+    {
+        public float x, y, w;   // left edge, top height, width (1 unit tall)
+
+        public PlatformSpec() { }
+        public PlatformSpec(float x, float y, float w) { this.x = x; this.y = y; this.w = w; }
+    }
+
+    public class StationSpec
+    {
+        public string kind;     // "anvil" | "shop" | "stamps"
+        public float x;
+
+        public StationSpec() { }
+        public StationSpec(string kind, float x) { this.kind = kind; this.x = x; }
+    }
+
+    public class PortalSpec
+    {
+        public string targetMapId;
+        public float x;
+        public string label;
+
+        public PortalSpec() { }
+        public PortalSpec(string targetMapId, float x, string label)
+        {
+            this.targetMapId = targetMapId; this.x = x; this.label = label;
+        }
+    }
+
+    /// <summary>
+    /// A walkable side-scrolling map. Combat maps set monsterId/enemyCount (id matches the
+    /// ZoneDef id); skill maps set nodeId/nodePositions (id matches the NodeDef id);
+    /// the town map has stations. Portals connect maps.
+    /// </summary>
+    public class MapDef
+    {
+        public string id;
+        public string name;
+        public float length = 30;
+        public string bgHex = "#1a2030";
+        public string monsterId;
+        public int enemyCount;
+        public string nodeId;
+        public List<float> nodePositions = new List<float>();
+        public List<PlatformSpec> platforms = new List<PlatformSpec>();
+        public List<StationSpec> stations = new List<StationSpec>();
+        public List<PortalSpec> portals = new List<PortalSpec>();
+
+        public bool IsCombat => !string.IsNullOrEmpty(monsterId);
+        public bool IsSkill => !string.IsNullOrEmpty(nodeId);
     }
 }
