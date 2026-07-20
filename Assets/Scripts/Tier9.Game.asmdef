@@ -1,7 +1,9 @@
 {
     "name": "Tier9.Game",
     "rootNamespace": "Tier9",
-    "references": [],
+    "references": [
+        "Unity.InputSystem"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

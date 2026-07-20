@@ -11,10 +11,11 @@ namespace Tier9.Content
     {
         public static readonly List<MonsterDef> Monsters = new List<MonsterDef>
         {
-            new MonsterDef { id = "puffshroom", name = "Puffshroom", hp = 15, xp = 2, coinAvg = 1.2, dropItemId = "puff_spore", dropChance = 0.45, reqDefense = 0 },
-            new MonsterDef { id = "hopper", name = "Hopper", hp = 45, xp = 5, coinAvg = 3.0, dropItemId = "hopper_leg", dropChance = 0.40, reqDefense = 4 },
-            new MonsterDef { id = "pebblit", name = "Pebblit", hp = 130, xp = 13, coinAvg = 7.5, dropItemId = "pebble_shard", dropChance = 0.35, reqDefense = 10 },
-            new MonsterDef { id = "glowcap", name = "Glowcap", hp = 380, xp = 32, coinAvg = 18.0, dropItemId = "glow_dust", dropChance = 0.30, reqDefense = 22 },
+            new MonsterDef { id = "puffshroom", name = "Puffshroom", hp = 15, xp = 2, coinAvg = 1.2, dropItemId = "puff_spore", dropChance = 0.45, reqDefense = 0, contactDamage = 0, moveSpeed = 1.0f },
+            new MonsterDef { id = "hopper", name = "Hopper", hp = 45, xp = 5, coinAvg = 3.0, dropItemId = "hopper_leg", dropChance = 0.40, reqDefense = 4, contactDamage = 0, moveSpeed = 1.6f },
+            new MonsterDef { id = "pebblit", name = "Pebblit", hp = 130, xp = 13, coinAvg = 7.5, dropItemId = "pebble_shard", dropChance = 0.35, reqDefense = 10, contactDamage = 2, moveSpeed = 0.9f, spriteScale = 1.2f },
+            new MonsterDef { id = "glowcap", name = "Glowcap", hp = 380, xp = 32, coinAvg = 18.0, dropItemId = "glow_dust", dropChance = 0.30, reqDefense = 22, contactDamage = 4, moveSpeed = 1.1f, spriteScale = 1.35f },
+            new MonsterDef { id = "mother_glowcap", name = "Mother Glowcap", hp = 2500, xp = 150, coinAvg = 90.0, dropItemId = "glow_dust", dropChance = 3.0, reqDefense = 22, contactDamage = 8, isBoss = true, moveSpeed = 0.8f, spriteScale = 2.6f },
         };
 
         public static readonly List<ZoneDef> Zones = new List<ZoneDef>
@@ -22,7 +23,85 @@ namespace Tier9.Content
             new ZoneDef { id = "meadow_edge", name = "Meadow Edge", monsterId = "puffshroom", killsToNext = 100 },
             new ZoneDef { id = "croak_hollow", name = "Croak Hollow", monsterId = "hopper", killsToNext = 250 },
             new ZoneDef { id = "boulder_pass", name = "Boulder Pass", monsterId = "pebblit", killsToNext = 500 },
-            new ZoneDef { id = "fungal_depths", name = "Fungal Depths", monsterId = "glowcap", killsToNext = 0 },
+            new ZoneDef { id = "fungal_depths", name = "Fungal Depths", monsterId = "glowcap", killsToNext = 500 },
+            new ZoneDef { id = "glowcap_lair", name = "Glowcap Lair", monsterId = "mother_glowcap", killsToNext = 0 },
+        };
+
+        public static readonly List<MapDef> Maps = new List<MapDef>
+        {
+            new MapDef
+            {
+                id = "town", name = "Spore Town", length = 26, bgHex = "#232b3d",
+                stations = { new StationSpec("anvil", 8), new StationSpec("shop", 12), new StationSpec("stamps", 16) },
+                platforms = { new PlatformSpec(10, 2.5f, 4) },
+                portals =
+                {
+                    new PortalSpec("copper_vein", 2, "Mine"),
+                    new PortalSpec("oak_tree", 5, "Forest"),
+                    new PortalSpec("meadow_edge", 24, "Meadow Edge"),
+                }
+            },
+            new MapDef
+            {
+                id = "meadow_edge", name = "Meadow Edge", length = 34, bgHex = "#1d2b22",
+                monsterId = "puffshroom", enemyCount = 4,
+                platforms = { new PlatformSpec(9, 2.2f, 4), new PlatformSpec(18, 3.2f, 3), new PlatformSpec(26, 2.2f, 4) },
+                portals = { new PortalSpec("town", 1, "Town"), new PortalSpec("croak_hollow", 33, "Croak Hollow") }
+            },
+            new MapDef
+            {
+                id = "croak_hollow", name = "Croak Hollow", length = 36, bgHex = "#1c2d2a",
+                monsterId = "hopper", enemyCount = 4,
+                platforms = { new PlatformSpec(8, 2.4f, 3), new PlatformSpec(16, 3.4f, 4), new PlatformSpec(27, 2.4f, 3) },
+                portals = { new PortalSpec("meadow_edge", 1, "Meadow Edge"), new PortalSpec("boulder_pass", 35, "Boulder Pass") }
+            },
+            new MapDef
+            {
+                id = "boulder_pass", name = "Boulder Pass", length = 38, bgHex = "#2b2620",
+                monsterId = "pebblit", enemyCount = 5,
+                platforms = { new PlatformSpec(7, 2.2f, 3), new PlatformSpec(14, 3.6f, 3), new PlatformSpec(22, 2.6f, 4), new PlatformSpec(31, 3.2f, 3) },
+                portals = { new PortalSpec("croak_hollow", 1, "Croak Hollow"), new PortalSpec("fungal_depths", 37, "Fungal Depths") }
+            },
+            new MapDef
+            {
+                id = "fungal_depths", name = "Fungal Depths", length = 38, bgHex = "#241d33",
+                monsterId = "glowcap", enemyCount = 5,
+                platforms = { new PlatformSpec(9, 2.4f, 4), new PlatformSpec(19, 3.4f, 3), new PlatformSpec(28, 2.4f, 4) },
+                portals = { new PortalSpec("boulder_pass", 1, "Boulder Pass"), new PortalSpec("glowcap_lair", 37, "Glowcap Lair") }
+            },
+            new MapDef
+            {
+                id = "glowcap_lair", name = "Glowcap Lair", length = 24, bgHex = "#170f22",
+                monsterId = "mother_glowcap", enemyCount = 1,
+                platforms = { new PlatformSpec(4, 2.6f, 3), new PlatformSpec(17, 2.6f, 3) },
+                portals = { new PortalSpec("fungal_depths", 1, "Fungal Depths") }
+            },
+            new MapDef
+            {
+                id = "copper_vein", name = "Copper Mine", length = 22, bgHex = "#2a2320",
+                nodeId = "copper_vein", nodePositions = { 8, 12, 16 },
+                platforms = { new PlatformSpec(11, 2.4f, 3) },
+                portals = { new PortalSpec("town", 1, "Town"), new PortalSpec("iron_vein", 21, "Deep Mine") }
+            },
+            new MapDef
+            {
+                id = "iron_vein", name = "Deep Mine", length = 20, bgHex = "#221d24",
+                nodeId = "iron_vein", nodePositions = { 8, 13 },
+                portals = { new PortalSpec("copper_vein", 1, "Copper Mine") }
+            },
+            new MapDef
+            {
+                id = "oak_tree", name = "Oak Grove", length = 22, bgHex = "#1c2a1c",
+                nodeId = "oak_tree", nodePositions = { 8, 12, 16 },
+                platforms = { new PlatformSpec(11, 2.4f, 3) },
+                portals = { new PortalSpec("town", 1, "Town"), new PortalSpec("birch_tree", 21, "Birch Thicket") }
+            },
+            new MapDef
+            {
+                id = "birch_tree", name = "Birch Thicket", length = 20, bgHex = "#22301f",
+                nodeId = "birch_tree", nodePositions = { 8, 13 },
+                portals = { new PortalSpec("oak_tree", 1, "Oak Grove") }
+            },
         };
 
         public static readonly List<NodeDef> Nodes = new List<NodeDef>
@@ -142,6 +221,7 @@ namespace Tier9.Content
 
         static Dictionary<string, MonsterDef> _monsters;
         static Dictionary<string, ZoneDef> _zones;
+        static Dictionary<string, MapDef> _maps;
         static Dictionary<string, NodeDef> _nodes;
         static Dictionary<string, ItemDef> _items;
         static Dictionary<string, RecipeDef> _recipes;
@@ -153,6 +233,7 @@ namespace Tier9.Content
         {
             _monsters = Monsters.ToDictionary(m => m.id);
             _zones = Zones.ToDictionary(z => z.id);
+            _maps = Maps.ToDictionary(m => m.id);
             _nodes = Nodes.ToDictionary(n => n.id);
             _items = Items.ToDictionary(i => i.id);
             _recipes = Recipes.ToDictionary(r => r.id);
@@ -163,6 +244,7 @@ namespace Tier9.Content
 
         public static MonsterDef Monster(string id) => id != null && _monsters.TryGetValue(id, out var v) ? v : null;
         public static ZoneDef Zone(string id) => id != null && _zones.TryGetValue(id, out var v) ? v : null;
+        public static MapDef Map(string id) => id != null && _maps.TryGetValue(id, out var v) ? v : null;
         public static NodeDef Node(string id) => id != null && _nodes.TryGetValue(id, out var v) ? v : null;
         public static ItemDef Item(string id) => id != null && _items.TryGetValue(id, out var v) ? v : null;
         public static RecipeDef Recipe(string id) => id != null && _recipes.TryGetValue(id, out var v) ? v : null;

@@ -69,12 +69,22 @@ namespace Tier9.UI
                         bool isHere = ch.task == taskType && ch.taskTargetId == node.id;
                         if (isHere)
                         {
-                            card.Add(Text(skill == SkillType.Mining ? "⛏ Mining here" : "🪓 Choppin here", "active-tag"));
-                            card.Add(new Button(() => Gm.AssignTask(ch, TaskType.Idle, "")) { text = "Return to Town" });
+                            card.Add(Text(skill == SkillType.Mining ? "⛏ You are here" : "🪓 You are here", "active-tag"));
+                            card.Add(new Button(() =>
+                            {
+                                Gm.TravelTo(ch, "town");
+                                UiRoot.I.CloseMenu();
+                            })
+                            { text = "Return to Town" });
                         }
                         else
                         {
-                            var go = new Button(() => Gm.AssignTask(ch, taskType, node.id)) { text = skill == SkillType.Mining ? "AFK Mine Here" : "AFK Chop Here" };
+                            var go = new Button(() =>
+                            {
+                                Gm.TravelTo(ch, node.id);
+                                UiRoot.I.CloseMenu();
+                            })
+                            { text = "Travel Here" };
                             go.AddToClassList("btn-primary");
                             card.Add(go);
                         }

@@ -1,12 +1,103 @@
 .app-root {
     flex-grow: 1;
-    background-color: #14161d;
+    background-color: rgba(0, 0, 0, 0);
     color: #d8dbe4;
     font-size: 14px;
 }
 
 .chrome {
     flex-grow: 1;
+}
+
+/* ---- World HUD ---- */
+
+.world-middle {
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.hud {
+    align-self: flex-start;
+    margin: 10px;
+    padding: 10px 12px;
+    background-color: rgba(22, 25, 33, 0.82);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: #313848;
+    min-width: 240px;
+}
+
+.hud-map {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: #f0b64a;
+    margin-bottom: 4px;
+}
+
+.hud-hp {
+    height: 20px;
+}
+
+.bar-fill--hp {
+    background-color: #d05656;
+}
+
+.hud-session {
+    font-size: 12px;
+    color: #cfd4e0;
+    margin-top: 4px;
+    white-space: normal;
+}
+
+.hud-hint {
+    align-self: center;
+    margin-bottom: 8px;
+    padding: 4px 12px;
+    background-color: rgba(22, 25, 33, 0.7);
+    border-radius: 6px;
+    color: #9aa1b3;
+    font-size: 11px;
+}
+
+/* ---- Menu overlay panel ---- */
+
+.menu-panel {
+    background-color: #1e222d;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: #3a4152;
+    padding: 14px;
+    width: 720px;
+    max-width: 92%;
+    height: 82%;
+}
+
+.menu-host {
+    flex-grow: 1;
+}
+
+.menu-close {
+    width: 34px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    background-color: #3a4152;
+}
+
+/* ---- Character creation sprite picker ---- */
+
+.sprite-pick {
+    width: 52px;
+    height: 52px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: #333a4d;
+    border-width: 2px;
+    border-color: #333a4d;
+    border-radius: 8px;
+}
+
+.sprite-pick--active {
+    border-color: #f0b64a;
+    background-color: #2f3546;
 }
 
 /* ---- Top bar ---- */

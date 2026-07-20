@@ -53,11 +53,52 @@ namespace Tier9.Sim
             return rate * stats.afkRate;
         }
 
-        public static double GatherPerSecond(ComputedStats stats, NodeDef node)
+        /// <summary>Gather rate while actively swinging at a node (no AFK-rate penalty).</summary>
+        public static double RawGatherPerSecond(ComputedStats stats, NodeDef node)
         {
             double eff = node.skill == SkillType.Mining ? stats.miningEff : stats.choppinEff;
             double perHour = GatherPerHourCap * eff / (eff + node.difficulty);
-            return perHour / 3600.0 * stats.afkRate;
+            return perHour / 3600.0;
+        }
+
+        public static double GatherPerSecond(ComputedStats stats, NodeDef node)
+        {
+            return RawGatherPerSecond(stats, node) * stats.afkRate;
+        }
+
+        /// <summary>
+        /// Applies everything a batch of kills yields (kill counts, XP, coins, drops).
+        /// Shared by the AFK sim and live world-mode combat so rewards always match.
+        /// </summary>
+        public static void ApplyKillRewards(AccountState acc, CharacterState ch, ZoneDef zone, MonsterDef mon, long kills, ComputedStats stats, AfkResult r)
+        {
+            if (kills <= 0) return;
+            r.kills += kills;
+            ch.AddKills(zone.id, kills);
+
+            ApplyClassXp(ch, kills * mon.xp * stats.xpMult, r);
+
+            double coins = kills * mon.coinAvg * stats.coinMult;
+            acc.coins += coins;
+            r.coins += coins;
+
+            ch.dropCarry += kills * mon.dropChance * stats.dropMult;
+            long drops = (long)Math.Floor(ch.dropCarry);
+            ch.dropCarry -= drops;
+            if (drops > 0)
+            {
+                acc.AddItem(mon.dropItemId, drops);
+                r.AddItem(mon.dropItemId, drops);
+            }
+        }
+
+        /// <summary>Applies gathered resources + skill XP. Shared by the AFK sim and live gathering.</summary>
+        public static void ApplyGatherRewards(AccountState acc, CharacterState ch, NodeDef node, long gathered, ComputedStats stats, AfkResult r)
+        {
+            if (gathered <= 0) return;
+            acc.AddItem(node.itemId, gathered);
+            r.AddItem(node.itemId, gathered);
+            ApplySkillXp(ch, node.skill, gathered * node.xpPerItem * stats.xpMult, r);
         }
 
         static void SimulateCombat(AccountState acc, CharacterState ch, double seconds, AfkResult r)
@@ -70,25 +111,7 @@ namespace Tier9.Sim
             ch.killCarry += KillsPerSecond(stats, mon) * seconds;
             long kills = (long)Math.Floor(ch.killCarry);
             ch.killCarry -= kills;
-            if (kills <= 0) return;
-
-            r.kills = kills;
-            ch.AddKills(zone.id, kills);
-
-            ApplyClassXp(ch, kills * mon.xp * stats.xpMult, r);
-
-            double coins = kills * mon.coinAvg * stats.coinMult;
-            acc.coins += coins;
-            r.coins = coins;
-
-            ch.dropCarry += kills * mon.dropChance * stats.dropMult;
-            long drops = (long)Math.Floor(ch.dropCarry);
-            ch.dropCarry -= drops;
-            if (drops > 0)
-            {
-                acc.AddItem(mon.dropItemId, drops);
-                r.AddItem(mon.dropItemId, drops);
-            }
+            ApplyKillRewards(acc, ch, zone, mon, kills, stats, r);
         }
 
         static void SimulateGather(AccountState acc, CharacterState ch, double seconds, AfkResult r)
@@ -102,11 +125,7 @@ namespace Tier9.Sim
             ch.resourceCarry += GatherPerSecond(stats, node) * seconds;
             long gathered = (long)Math.Floor(ch.resourceCarry);
             ch.resourceCarry -= gathered;
-            if (gathered <= 0) return;
-
-            acc.AddItem(node.itemId, gathered);
-            r.AddItem(node.itemId, gathered);
-            ApplySkillXp(ch, node.skill, gathered * node.xpPerItem * stats.xpMult, r);
+            ApplyGatherRewards(acc, ch, node, gathered, stats, r);
         }
 
         static void ApplyClassXp(CharacterState ch, double xp, AfkResult r)

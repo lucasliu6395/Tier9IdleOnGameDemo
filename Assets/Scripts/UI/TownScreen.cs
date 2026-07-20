@@ -9,6 +9,12 @@ namespace Tier9.UI
     {
         string _subTab = "anvil";
 
+        /// <summary>Used by town stations in the world to open directly to their tab.</summary>
+        public void SetSubTab(string kind)
+        {
+            if (kind == "anvil" || kind == "shop" || kind == "stamps") _subTab = kind;
+        }
+
         protected override string StructureKey()
         {
             var sb = new StringBuilder();
