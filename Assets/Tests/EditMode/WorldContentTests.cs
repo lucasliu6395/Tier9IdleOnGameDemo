@@ -44,6 +44,45 @@ namespace Tier9.Tests
         }
 
         [Test]
+        public void DeferredLoot_MatchesInstantRewards_OnceCredited()
+        {
+            // Physical drop pickups defer crediting coins/items until the player collects
+            // them, using ApplyKillXpAndComputeLoot instead of ApplyKillRewards. Once that
+            // loot is credited (simulating a pickup), the account must end up identical to
+            // the instant-crediting AFK path for the same number of kills.
+            var zone = ContentDatabase.Zone("meadow_edge");
+            var mon = ContentDatabase.Monster(zone.monsterId);
+            const long kills = 40;
+
+            var instantAcc = MakeAccount(TaskType.Combat, "meadow_edge");
+            var instantCh = instantAcc.characters[0];
+            var instantStats = StatCalculator.Compute(instantAcc, instantCh);
+            var instantResult = new AfkResult();
+            AfkSimulator.ApplyKillRewards(instantAcc, instantCh, zone, mon, kills, instantStats, instantResult);
+
+            var deferredAcc = MakeAccount(TaskType.Combat, "meadow_edge");
+            var deferredCh = deferredAcc.characters[0];
+            double coinsBeforePickup = deferredAcc.coins; // CreateNew() seeds starting coins
+            var deferredStats = StatCalculator.Compute(deferredAcc, deferredCh);
+            var deferredResult = new AfkResult();
+            var (coins, dropItemId, dropCount) = AfkSimulator.ApplyKillXpAndComputeLoot(deferredCh, zone, mon, kills, deferredStats, deferredResult);
+
+            // Nothing credited yet — the "pickup" hasn't happened.
+            Assert.AreEqual(coinsBeforePickup, deferredAcc.coins);
+            Assert.AreEqual(0, deferredAcc.GetItemCount(mon.dropItemId));
+
+            // Now simulate collecting the drop.
+            if (coins > 0) deferredAcc.coins += coins;
+            if (dropCount > 0) deferredAcc.AddItem(dropItemId, dropCount);
+
+            Assert.AreEqual(instantCh.level, deferredCh.level);
+            Assert.AreEqual(instantCh.xp, deferredCh.xp, 0.0001);
+            Assert.AreEqual(instantAcc.coins, deferredAcc.coins, 0.0001);
+            Assert.AreEqual(instantAcc.GetItemCount(mon.dropItemId), deferredAcc.GetItemCount(mon.dropItemId));
+            Assert.AreEqual(instantCh.GetKills(zone.id), deferredCh.GetKills(zone.id));
+        }
+
+        [Test]
         public void ActiveGathering_OutpacesAfkGathering()
         {
             var acc = MakeAccount(TaskType.Mining, "copper_vein");

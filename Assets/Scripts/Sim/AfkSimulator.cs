@@ -67,28 +67,45 @@ namespace Tier9.Sim
         }
 
         /// <summary>
-        /// Applies everything a batch of kills yields (kill counts, XP, coins, drops).
-        /// Shared by the AFK sim and live world-mode combat so rewards always match.
+        /// Applies kill counts and XP (always instant) and returns the coin/item loot
+        /// the kills earned, without crediting it. AFK play credits that loot immediately
+        /// (see ApplyKillRewards); live world-mode instead spawns physical drop pickups
+        /// with it, so a kill's loot only reaches the account once it is collected.
         /// </summary>
-        public static void ApplyKillRewards(AccountState acc, CharacterState ch, ZoneDef zone, MonsterDef mon, long kills, ComputedStats stats, AfkResult r)
+        public static (double coins, string dropItemId, long dropCount) ApplyKillXpAndComputeLoot(
+            CharacterState ch, ZoneDef zone, MonsterDef mon, long kills, ComputedStats stats, AfkResult r)
         {
-            if (kills <= 0) return;
+            if (kills <= 0) return (0, null, 0);
             r.kills += kills;
             ch.AddKills(zone.id, kills);
 
             ApplyClassXp(ch, kills * mon.xp * stats.xpMult, r);
 
             double coins = kills * mon.coinAvg * stats.coinMult;
-            acc.coins += coins;
-            r.coins += coins;
 
             ch.dropCarry += kills * mon.dropChance * stats.dropMult;
             long drops = (long)Math.Floor(ch.dropCarry);
             ch.dropCarry -= drops;
+
+            return (coins, mon.dropItemId, drops);
+        }
+
+        /// <summary>
+        /// Applies everything a batch of kills yields (kill counts, XP, coins, drops) instantly.
+        /// Used by the AFK sim, where nobody is standing there to walk over physical loot.
+        /// </summary>
+        public static void ApplyKillRewards(AccountState acc, CharacterState ch, ZoneDef zone, MonsterDef mon, long kills, ComputedStats stats, AfkResult r)
+        {
+            var (coins, dropItemId, drops) = ApplyKillXpAndComputeLoot(ch, zone, mon, kills, stats, r);
+            if (coins > 0)
+            {
+                acc.coins += coins;
+                r.coins += coins;
+            }
             if (drops > 0)
             {
-                acc.AddItem(mon.dropItemId, drops);
-                r.AddItem(mon.dropItemId, drops);
+                acc.AddItem(dropItemId, drops);
+                r.AddItem(dropItemId, drops);
             }
         }
 

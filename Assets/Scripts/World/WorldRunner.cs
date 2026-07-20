@@ -71,7 +71,9 @@ namespace Tier9.World
             _lastMapId = CurrentMap.id;
         }
 
-        /// <summary>Called by EnemyController when the live player lands the killing blow.</summary>
+        /// <summary>Called by EnemyController when the live player lands the killing blow.
+        /// XP applies instantly; coins/items pop out as physical pickups the player must
+        /// approach to collect (see OnDropCollected).</summary>
         public void OnEnemyKilled(MonsterDef mon, Vector3 at)
         {
             var gm = GameManager.I;
@@ -81,11 +83,35 @@ namespace Tier9.World
 
             var stats = StatCalculator.Compute(gm.Account, ch);
             int levelBefore = ch.level;
-            AfkSimulator.ApplyKillRewards(gm.Account, ch, zone, mon, 1, stats, Session);
+            var (coins, dropItemId, dropCount) = AfkSimulator.ApplyKillXpAndComputeLoot(ch, zone, mon, 1, stats, Session);
 
             FloatyText.Spawn(at + Vector3.up * 0.6f, $"+{Fmt.N(mon.xp * stats.xpMult)} XP", new Color(1f, 0.85f, 0.4f));
             if (ch.level > levelBefore)
                 FloatyText.Spawn(Player.transform.position + Vector3.up * 1.6f, "LEVEL UP!", new Color(0.6f, 1f, 0.5f), 1.6f);
+
+            if (coins > 0) DropPickup.SpawnCoins(at, coins);
+            if (dropCount > 0) DropPickup.SpawnItem(at, dropItemId, dropCount);
+
+            gm.NotifyChanged();
+        }
+
+        /// <summary>Called by DropPickup once the player walks up to (or gets magnet-pulled to) a drop.</summary>
+        public void OnDropCollected(double coins, string itemId, long count, Vector3 at)
+        {
+            var gm = GameManager.I;
+            if (coins > 0)
+            {
+                gm.Account.coins += coins;
+                Session.coins += coins;
+                FloatyText.Spawn(at + Vector3.up * 0.3f, $"+{Fmt.N(coins)} 🪙", new Color(1f, 0.85f, 0.4f), 0.8f);
+            }
+            if (count > 0 && !string.IsNullOrEmpty(itemId))
+            {
+                gm.Account.AddItem(itemId, count);
+                Session.AddItem(itemId, count);
+                var item = ContentDatabase.Item(itemId);
+                FloatyText.Spawn(at + Vector3.up * 0.3f, $"+{count} {item?.name}", new Color(0.65f, 0.9f, 1f), 0.8f);
+            }
             gm.NotifyChanged();
         }
 

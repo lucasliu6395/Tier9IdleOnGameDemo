@@ -32,7 +32,7 @@ to maintain.
 | System | What it does |
 | --- | --- |
 | **The world** | 10 walkable maps: Spore Town (hub with Anvil/Shop/Stamps stations), 4 combat zones, the Glowcap Lair boss arena, and 4 skilling spots — all connected by portals. Where your character stands *is* their AFK task. |
-| **Active combat** | Attack with F; kills grant class XP, coins, and drops at **full rate** (AFK earns 60%). Basic mobs are harmless to touch; bigger ones (Pebblits, Glowcaps) deal contact damage, and the **Mother Glowcap** boss chases you. Kill quotas unlock the next zone's portal per character. |
+| **Active combat** | Attack with F; kills grant class XP instantly, and pop out **physical coin/item drops** that fall, settle, and get magnet-pulled into you as you approach — no menu required. Rewards are earned at **full rate** (AFK earns 60%). Basic mobs are harmless to touch; bigger ones (Pebblits, Glowcaps) deal contact damage, and the **Mother Glowcap** boss chases you. Kill quotas unlock the next zone's portal per character. |
 | **Skilling** | Press E at a mining/choppin node to auto-swing. Gather rate scales with skill level, tools, and stats. Deeper nodes need higher skill levels. |
 | **Characters** | 3 slots; you control one while the others AFK at their own locations simultaneously. Pick a name + appearance at creation; Beginners choose Warrior / Archer / Mage at level 5. 1 talent point per level. |
 | **Town** | Anvil (craft gear from materials), Shop (buy basics, sell loot), Stamps (permanent account-wide % bonuses with scaling costs) — walk up and press E, or use the Town menu. |
@@ -49,7 +49,7 @@ generated placeholder squares. Ids:
 
 - **Monsters:** `puffshroom`, `hopper`, `pebblit`, `glowcap`, `mother_glowcap` (boss)
 - **Player looks:** `player_a` … `player_d` (add more with any `player_*` name — they appear in character creation automatically)
-- **World:** `tile_ground`, `tile_platform`, `portal`, `station_anvil`, `station_shop`, `station_stamps`
+- **World:** `tile_ground`, `tile_platform`, `portal`, `station_anvil`, `station_shop`, `station_stamps`, `coin_pickup`
 - **Resource nodes:** `copper_vein`, `iron_vein`, `oak_tree`, `birch_tree`
 - **Materials:** `puff_spore`, `hopper_leg`, `pebble_shard`, `glow_dust`, `copper_ore`, `iron_ore`, `oak_log`, `birch_log`
 - **Weapons:** `stick`, `wooden_sword`, `copper_sword`, `iron_blade`
