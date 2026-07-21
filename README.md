@@ -45,7 +45,12 @@ so you can demo AFK progression instantly, plus a save reset.
 
 Drop images into `Assets/Resources/Sprites/`, named after the content id
 (e.g. `puffshroom.png`). They import as sprites automatically and replace the
-generated placeholder squares. Ids:
+generated placeholder squares.
+
+**See [SPRITE_KIT.md](SPRITE_KIT.md)** for a curated set of free, cohesive art
+packs (from itch.io) and an exact id-by-id rename map to drop them in.
+
+Ids:
 
 - **Monsters:** `puffshroom`, `hopper`, `pebblit`, `glowcap`, `mother_glowcap` (boss)
 - **Player looks:** `player_a` … `player_d` (add more with any `player_*` name — they appear in character creation automatically)
@@ -92,3 +97,16 @@ Unity.exe -batchmode -projectPath . -runTests -testPlatform EditMode -testResult
 Tests cover the XP curve, combat/gather simulation, offline-vs-live consistency,
 zone unlocks, stamp/talent/equipment stat effects, save roundtrips, and content
 reference integrity.
+
+## Credits
+
+All game code, content, and mechanics are original. The bundled placeholder art
+is generated at runtime.
+
+If you install the recommended art from [SPRITE_KIT.md](SPRITE_KIT.md), honor
+each pack's license. In particular:
+
+- **Pixel Adventure 1 & 2** by Pixel Frog — CC0 (no attribution required).
+- **Shikashi's Fantasy Icons Pack** by Matt Firth (shikashipx) — **CC-BY 4.0,
+  attribution required**, incorporating art from game-icons.net. If you use it,
+  keep this credit line.
