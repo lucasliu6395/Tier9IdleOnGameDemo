@@ -63,11 +63,19 @@ namespace Tier9.EditorTools
         {
             if (File.Exists(ScenePath)) return;
             if (!Directory.Exists(ScenesDir)) Directory.CreateDirectory(ScenesDir);
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Additive);
-            EditorSceneManager.SaveScene(scene, ScenePath);
-            EditorSceneManager.CloseScene(scene, removeScene: true);
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
-            Debug.Log("[Tier9] Created " + ScenePath + " and added it to Build Settings.");
+
+            // A freshly opened CLI project sits on an unsaved, untitled scene. Save *that*
+            // scene as Main rather than creating one additively — the additive path errors
+            // while an untitled scene is open. If the user is already in a named scene,
+            // leave it alone; they have a scene to work from.
+            var active = EditorSceneManager.GetActiveScene();
+            if (!string.IsNullOrEmpty(active.path)) return;
+
+            if (EditorSceneManager.SaveScene(active, ScenePath))
+            {
+                EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+                Debug.Log("[Tier9] Saved the current scene as " + ScenePath + " and added it to Build Settings.");
+            }
         }
 
         const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
