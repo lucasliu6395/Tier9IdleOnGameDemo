@@ -33,7 +33,7 @@ to maintain.
 | --- | --- |
 | **The world** | 10 walkable maps: Spore Town (hub with Anvil/Shop/Stamps stations), 4 combat zones, the Glowcap Lair boss arena, and 4 skilling spots — all connected by portals. Where your character stands *is* their AFK task. |
 | **Active combat** | Attack with F; kills grant class XP instantly, and pop out **physical coin/item drops** that fall, settle, and get magnet-pulled into you as you approach — no menu required. Rewards are earned at **full rate** (AFK earns 60%). Basic mobs are harmless to touch; bigger ones (Pebblits, Glowcaps) deal contact damage, and the **Mother Glowcap** boss chases you. Kill quotas unlock the next zone's portal per character. |
-| **Skilling** | Press E at a mining/choppin node to auto-swing. Gather rate scales with skill level, tools, and stats. Deeper nodes need higher skill levels. |
+| **Skilling** | Face a mining/choppin node and press F, just like attacking — each connecting swing yields one resource on the same ~0.45s cooldown as combat, with a `+1 Ore`/`+1 Log`-style floaty text. Deeper nodes need higher skill levels. |
 | **Characters** | 3 slots; you control one while the others AFK at their own locations simultaneously. Pick a name + appearance at creation; Beginners choose Warrior / Archer / Mage at level 5. 1 talent point per level. |
 | **Town** | Anvil (craft gear from materials), Shop (buy basics, sell loot), Stamps (permanent account-wide % bonuses with scaling costs) — walk up and press E, or use the Town menu. |
 | **Offline gains** | On launch, elapsed real time (up to 24h) runs through the *same* simulation code as AFK play, then a claim popup summarizes what everyone earned. |

@@ -83,17 +83,6 @@ namespace Tier9.Tests
         }
 
         [Test]
-        public void ActiveGathering_OutpacesAfkGathering()
-        {
-            var acc = MakeAccount(TaskType.Mining, "copper_vein");
-            var stats = StatCalculator.Compute(acc, acc.characters[0]);
-            var node = ContentDatabase.Node("copper_vein");
-            Assert.Greater(AfkSimulator.RawGatherPerSecond(stats, node),
-                AfkSimulator.GatherPerSecond(stats, node),
-                "active gathering skips the AFK-rate penalty");
-        }
-
-        [Test]
         public void Maps_ReferencesAreValid()
         {
             Assert.NotNull(ContentDatabase.Map("town"), "town map exists");

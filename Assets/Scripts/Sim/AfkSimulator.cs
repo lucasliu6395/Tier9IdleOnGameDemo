@@ -53,17 +53,12 @@ namespace Tier9.Sim
             return rate * stats.afkRate;
         }
 
-        /// <summary>Gather rate while actively swinging at a node (no AFK-rate penalty).</summary>
-        public static double RawGatherPerSecond(ComputedStats stats, NodeDef node)
+        /// <summary>AFK gather rate (background characters only — live gathering is hit-based, see PlayerController2D).</summary>
+        public static double GatherPerSecond(ComputedStats stats, NodeDef node)
         {
             double eff = node.skill == SkillType.Mining ? stats.miningEff : stats.choppinEff;
             double perHour = GatherPerHourCap * eff / (eff + node.difficulty);
-            return perHour / 3600.0;
-        }
-
-        public static double GatherPerSecond(ComputedStats stats, NodeDef node)
-        {
-            return RawGatherPerSecond(stats, node) * stats.afkRate;
+            return perHour / 3600.0 * stats.afkRate;
         }
 
         /// <summary>

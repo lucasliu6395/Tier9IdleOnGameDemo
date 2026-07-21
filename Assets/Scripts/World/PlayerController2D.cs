@@ -10,7 +10,8 @@ namespace Tier9.World
 {
     /// <summary>
     /// Keyboard platformer controls for the live character:
-    /// A/D or arrows move, Space/W jump, F attack, E interact (portals/stations/nodes).
+    /// A/D or arrows move, Space/W jump, F attack (hits enemies and gather nodes alike),
+    /// E interact (portals/stations).
     /// </summary>
     public class PlayerController2D : MonoBehaviour
     {
@@ -34,13 +35,9 @@ namespace Tier9.World
         float _invulnUntil;
         float _swingPunch;
 
-        GatherNode _engagedNode;
-        double _gatherCarry;
-
         public double CurrentHp { get; private set; }
         public double MaxHp => _stats == null ? 10 : _stats.maxHp;
         public BoxCollider2D BodyCollider => _col;
-        public bool IsGathering => _engagedNode != null;
 
         public void Init(CharacterState ch, float spawnX)
         {
@@ -105,16 +102,12 @@ namespace Tier9.World
             {
                 _facing = move > 0 ? 1 : -1;
                 _sr.flipX = _facing < 0;
-                DisengageGather();
             }
-            if (jumpPressed) DisengageGather();
 
             _attackTimer -= Time.deltaTime;
             if (attackPressed && _attackTimer <= 0f) DoAttack();
 
             if (interactPressed) TryInteract();
-
-            TickGathering();
 
             // Passive regen when unhurt for a while
             if (Time.time - _lastHurtTime > RegenDelay && CurrentHp < MaxHp)
@@ -154,8 +147,23 @@ namespace Tier9.World
             foreach (var hit in hits)
             {
                 var enemy = hit.GetComponentInParent<EnemyController>();
-                if (enemy != null) enemy.TakeHit(_stats.damage, _facing);
+                if (enemy != null) { enemy.TakeHit(_stats.damage, _facing); continue; }
+
+                var node = hit.GetComponentInParent<GatherNode>();
+                if (node != null) GatherHit(node);
             }
+        }
+
+        void GatherHit(GatherNode node)
+        {
+            if (_ch.GetSkillLevel(node.Def.skill) < node.Def.reqSkillLevel)
+            {
+                FloatyText.Spawn(node.transform.position + Vector3.up * 1.2f,
+                    $"Requires {node.Def.skill} Lv {node.Def.reqSkillLevel}", new Color(1f, 0.45f, 0.4f));
+                return;
+            }
+            node.Pulse();
+            WorldRunner.I.OnGathered(node.Def, 1, node.transform.position);
         }
 
         void TryInteract()
@@ -167,7 +175,6 @@ namespace Tier9.World
             {
                 Component c = hit.GetComponentInParent<PortalObject>();
                 if (c == null) c = hit.GetComponentInParent<StationObject>();
-                if (c == null) c = hit.GetComponentInParent<GatherNode>();
                 if (c == null) continue;
                 float d = Vector2.Distance(transform.position, c.transform.position);
                 if (d < bestDist) { bestDist = d; best = c; }
@@ -176,42 +183,6 @@ namespace Tier9.World
             {
                 case PortalObject portal: portal.Interact(_ch); break;
                 case StationObject station: station.Interact(); break;
-                case GatherNode node: EngageGather(node); break;
-            }
-        }
-
-        // ---- gathering ----
-
-        public void EngageGather(GatherNode node)
-        {
-            if (_ch.GetSkillLevel(node.Def.skill) < node.Def.reqSkillLevel)
-            {
-                FloatyText.Spawn(node.transform.position + Vector3.up * 1.2f,
-                    $"Requires {node.Def.skill} Lv {node.Def.reqSkillLevel}", new Color(1f, 0.45f, 0.4f));
-                return;
-            }
-            _engagedNode = node;
-            _gatherCarry = 0;
-        }
-
-        void DisengageGather() => _engagedNode = null;
-
-        void TickGathering()
-        {
-            if (_engagedNode == null) return;
-            if (Vector2.Distance(transform.position, _engagedNode.transform.position) > 2.4f)
-            {
-                DisengageGather();
-                return;
-            }
-            _swingPunch = Mathf.Max(_swingPunch, 0.4f);
-            _gatherCarry += AfkSimulator.RawGatherPerSecond(_stats, _engagedNode.Def) * Time.deltaTime;
-            long gathered = (long)Math.Floor(_gatherCarry);
-            if (gathered > 0)
-            {
-                _gatherCarry -= gathered;
-                _engagedNode.Pulse();
-                WorldRunner.I.OnGathered(_engagedNode.Def, gathered, _engagedNode.transform.position);
             }
         }
 
@@ -234,7 +205,6 @@ namespace Tier9.World
             _invulnUntil = Time.time + 2f;
             transform.position = new Vector3(_spawnX, 1.5f, 0);
             _rb.linearVelocity = Vector2.zero;
-            DisengageGather();
             FloatyText.Spawn(transform.position + Vector3.up * 1.4f, "Knocked out!", new Color(1f, 0.5f, 0.3f), 1.3f);
         }
     }

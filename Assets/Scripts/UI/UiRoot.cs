@@ -158,7 +158,7 @@ namespace Tier9.UI
             _hud.Add(hpBar);
             _hud.Add(_sessionLabel);
 
-            var hint = new Label("A/D move   ·   Space jump   ·   F attack   ·   E interact   ·   Esc close menu");
+            var hint = new Label("A/D move   ·   Space jump   ·   F attack/gather   ·   E interact   ·   Esc close menu");
             hint.AddToClassList("hud-hint");
             hint.pickingMode = PickingMode.Ignore;
 

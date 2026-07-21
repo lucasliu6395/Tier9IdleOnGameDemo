@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Tier9.World
 {
-    /// <summary>A mineable rock / choppable tree. Press E nearby to start auto-gathering;
-    /// moving away or jumping stops it.</summary>
+    /// <summary>A mineable rock / choppable tree. Face it and press F to swing —
+    /// each connecting hit yields one resource, on the same cooldown as an attack.</summary>
     public class GatherNode : MonoBehaviour
     {
         public NodeDef Def { get; private set; }
@@ -29,7 +29,7 @@ namespace Tier9.World
             _sr.sortingOrder = 1;
 
             string verb = def.skill == SkillType.Mining ? "Mine" : "Chop";
-            WorldText.Create(transform, new Vector3(0, 1.6f, 0), $"[E] {verb} {def.name}",
+            WorldText.Create(transform, new Vector3(0, 1.6f, 0), $"[F] {verb} {def.name}",
                 new Color(0.75f, 0.8f, 0.9f), 0.85f, 6);
         }
 
