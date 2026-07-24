@@ -106,7 +106,8 @@ is generated at runtime.
 If you install the recommended art from [SPRITE_KIT.md](SPRITE_KIT.md), honor
 each pack's license. In particular:
 
-- **Pixel Adventure 1 & 2** by Pixel Frog — CC0 (no attribution required).
+- **Pixel Adventure 1** by Pixel Frog — CC0 (no attribution required), free.
+  (Its sequel *Pixel Adventure 2* is paid and optional — PA1 covers this game.)
 - **Shikashi's Fantasy Icons Pack** by Matt Firth (shikashipx) — **CC-BY 4.0,
   attribution required**, incorporating art from game-icons.net. If you use it,
   keep this credit line.

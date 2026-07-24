@@ -29,16 +29,20 @@ placeholder, so you can adopt art incrementally.
 ## Recommended packs
 
 ### 1. World art (characters, enemies, terrain) — one cohesive style
-**Pixel Adventure 1 + 2 — by Pixel Frog** · **License: CC0** (no attribution
-required) · Free.
+**Pixel Adventure 1 — by Pixel Frog** · **License: CC0** (no attribution
+required) · **Free** (name-your-price, $0 is fine).
 - Pixel Adventure 1: https://pixelfrog-assets.itch.io/pixel-adventure-1
-- Pixel Adventure 2: https://pixelfrog-assets.itch.io/pixel-adventure-2
 
 Covers your **4 player looks, all 5 monsters + boss, and the ground/platform
-tiles** in a single consistent pixel style. PA1 ships 4 playable characters
-(Ninja Frog, Mask Dude, Pink Man, Virtual Guy) and a set of animated enemies;
-PA2 adds ~20 more enemies to pick from. Use the **idle frame** of each animation
-as the static sprite (or wire up animation later).
+tiles** in a single consistent pixel style — all from this one free pack. PA1
+ships 4 playable characters (Ninja Frog, Mask Dude, Pink Man, Virtual Guy) and
+~20 animated enemies (Mushroom, Plant, Slime, Bunny, Chicken, Rock/Rocky, etc.),
+so you have plenty to map from. Use the **idle frame** of each animation as the
+static sprite (or wire up animation later).
+
+> **Note:** its sequel, *Pixel Adventure 2* (https://pixelfrog-assets.itch.io/pixel-adventure-2),
+> is **paid** ($5 minimum) and only adds 20 more enemies. You don't need it — PA1
+> alone covers this game. Grab it later only if you want extra enemy variety.
 
 ### 2. Inventory icons (materials, gear, tools, coins) — one cohesive style
 **Shikashi's Fantasy Icons Pack — by shikashipx** · **License: CC-BY 4.0
@@ -81,7 +85,7 @@ small world objects — or just leave them as placeholders.
 |---|---|---|
 | `puffshroom.png` | Mushroom | direct match |
 | `hopper.png` | Bunny / Chicken | pick a small hopping enemy |
-| `pebblit.png` | Rock / "Rocky" (PA2) | rocky look |
+| `pebblit.png` | Rock / "Rocky" | rocky look |
 | `glowcap.png` | Slime or a 2nd mushroom | tint bluish for "glow" |
 | `mother_glowcap.png` | largest enemy you like | the game scales it up 2.6× as a boss |
 
@@ -175,8 +179,8 @@ small world objects — or just leave them as placeholders.
   single seamless tile works fine.
 
 ## Sources
-- [Pixel Adventure 1 — Pixel Frog (CC0)](https://pixelfrog-assets.itch.io/pixel-adventure-1)
-- [Pixel Adventure 2 — Pixel Frog (CC0)](https://pixelfrog-assets.itch.io/pixel-adventure-2)
+- [Pixel Adventure 1 — Pixel Frog (CC0, free)](https://pixelfrog-assets.itch.io/pixel-adventure-1)
+- [Pixel Adventure 2 — Pixel Frog (CC0, **paid** $5 min — optional)](https://pixelfrog-assets.itch.io/pixel-adventure-2)
 - [Shikashi's Fantasy Icons Pack — shikashipx (CC-BY 4.0)](https://shikashipx.itch.io/shikashis-fantasy-icons-pack)
 - [itch.io CC0 nature assets](https://itch.io/game-assets/assets-cc0/tag-nature)
 - [Kenney — CC0 game assets (alternative anchor)](https://kenney.nl/assets)
