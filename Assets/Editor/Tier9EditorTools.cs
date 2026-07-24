@@ -151,6 +151,11 @@ namespace Tier9.EditorTools
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
             importer.mipmapEnabled = false;
+            // Sprites are normalized to a 64px canvas, so 64 PPU makes each ~1 world unit —
+            // matching the runtime placeholder scale that world-object localScales assume.
+            importer.spritePixelsPerUnit = 64f;
+            importer.filterMode = FilterMode.Point;                 // crisp pixel art
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
         }
     }
 

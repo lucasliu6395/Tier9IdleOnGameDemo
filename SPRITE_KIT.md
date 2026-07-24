@@ -4,6 +4,13 @@ This is a curated shopping list + rename map for giving Tier9 Idle real art, usi
 only free 2D assets from the approved sources. It is built around **one cohesive
 world style + one cohesive icon style**.
 
+> ✅ **Status: wired in.** Pixel Adventure 1 (players/rock enemy/terrain/portal) and
+> Shikashi's Fantasy Icons (all items/tools/stamps/class icons/stations + mushroom
+> monster, recolored cyan/purple for the glowcaps) have been sliced from their
+> sheets into `Assets/Resources/Sprites/` at 64×64. Still on placeholders:
+> **`hopper`** (no free frog sprite in these packs — drop a `hopper.png` to fill it).
+> The tables below are kept as reference / for swapping art later.
+
 ## How this works
 
 The game loads every sprite **by id** from `Assets/Resources/Sprites/`, with a
