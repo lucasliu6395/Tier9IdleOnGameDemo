@@ -140,6 +140,14 @@ namespace Tier9.Core
             NotifyChanged();
         }
 
+        public void SetAppearance(CharacterState ch, string spriteId)
+        {
+            if (ch == null || string.IsNullOrEmpty(spriteId) || ch.spriteId == spriteId) return;
+            ch.spriteId = spriteId;
+            SaveSystem.Save(Account);
+            NotifyChanged();
+        }
+
         public bool CreateCharacter(string name, string spriteId = "")
         {
             if (Account.characters.Count >= AccountState.MaxCharacters) return false;

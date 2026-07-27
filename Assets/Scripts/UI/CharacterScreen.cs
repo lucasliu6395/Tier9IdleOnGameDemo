@@ -14,7 +14,7 @@ namespace Tier9.UI
             var ch = Ch;
             if (ch == null) return "none";
             var sb = new StringBuilder();
-            sb.Append(Account.selectedCharacter).Append(':').Append(ch.classId).Append(':');
+            sb.Append(Account.selectedCharacter).Append(':').Append(ch.classId).Append(':').Append(ch.spriteId).Append(':');
             sb.Append(ch.classId == "beginner" && ch.level >= GameManager.PromoteLevel ? "promo" : "-").Append(':');
             sb.Append(ch.weaponId).Append(',').Append(ch.armorId).Append(',').Append(ch.pickId).Append(',').Append(ch.axeId).Append(':');
             foreach (var s in Account.storage)
@@ -48,6 +48,23 @@ namespace Tier9.UI
                 barLabel.text = $"{Fmt.N(ch.xp)} / {Fmt.N(next)} XP";
             });
             scroll.Add(idCard);
+
+            // Appearance
+            var lookCard = Card("Appearance");
+            lookCard.Add(Text("Pick this character's look. Drop player_*.png in Resources/Sprites for more.", "muted"));
+            var lookRow = new VisualElement();
+            lookRow.AddToClassList("row");
+            foreach (var spriteId in SpriteLibrary.PlayerSpriteIds())
+            {
+                string id = spriteId;
+                var pick = new Button(() => Gm.SetAppearance(ch, id));
+                pick.AddToClassList("sprite-pick");
+                if (ch.spriteId == id) pick.AddToClassList("sprite-pick--active");
+                pick.style.backgroundImage = new StyleBackground(SpriteLibrary.Get(id));
+                lookRow.Add(pick);
+            }
+            lookCard.Add(lookRow);
+            scroll.Add(lookCard);
 
             // Promotion
             if (ch.classId == "beginner" && ch.level >= GameManager.PromoteLevel)

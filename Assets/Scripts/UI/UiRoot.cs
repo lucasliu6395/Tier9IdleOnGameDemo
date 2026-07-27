@@ -271,7 +271,7 @@ namespace Tier9.UI
 
             _coinsLabel.text = $"🪙 {Fmt.N(acc.coins)}";
 
-            string key = $"{acc.characters.Count}:{acc.selectedCharacter}";
+            string key = $"{acc.characters.Count}:{acc.selectedCharacter}:{acc.Selected?.spriteId}";
             if (key != _charBarKey)
             {
                 _charBarKey = key;

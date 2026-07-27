@@ -78,6 +78,12 @@ namespace Tier9.World
         {
             _stats = StatCalculator.Compute(GameManager.I.Account, _ch);
             if (CurrentHp > MaxHp) CurrentHp = MaxHp;
+            // Reflect a live appearance change (Character tab) on the world body.
+            if (_sr != null)
+            {
+                var id = string.IsNullOrEmpty(_ch.spriteId) ? AccountState.DefaultPlayerSprites[0] : _ch.spriteId;
+                _sr.sprite = SpriteLibrary.Get(id);
+            }
         }
 
         void Update()
