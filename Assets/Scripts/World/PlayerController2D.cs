@@ -56,7 +56,8 @@ namespace Tier9.World
             spriteGo.transform.SetParent(transform, false);
             spriteGo.transform.localScale = Vector3.one * 1.3f;
             _sr = spriteGo.AddComponent<SpriteRenderer>();
-            _sr.sprite = SpriteLibrary.Get(string.IsNullOrEmpty(_ch.spriteId) ? "class_" + _ch.classId : _ch.spriteId);
+            // The body is always a player-character sprite, never a class weapon-icon.
+            _sr.sprite = SpriteLibrary.Get(string.IsNullOrEmpty(_ch.spriteId) ? AccountState.DefaultPlayerSprites[0] : _ch.spriteId);
             _sr.sortingOrder = 3;
 
             RefreshStats();

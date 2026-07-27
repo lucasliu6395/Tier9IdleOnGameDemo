@@ -203,8 +203,28 @@ namespace Tier9.Core
             return new CharacterState
             {
                 name = string.IsNullOrWhiteSpace(name) ? "Hero" : name.Trim(),
-                spriteId = spriteId ?? ""
+                spriteId = string.IsNullOrEmpty(spriteId) ? DefaultPlayerSprites[0] : spriteId
             };
+        }
+
+        public static readonly string[] DefaultPlayerSprites = { "player_a", "player_b", "player_c", "player_d" };
+
+        /// <summary>
+        /// Heal saves from before appearances existed: a character's body must be a real
+        /// player sprite, never a class weapon-icon. Returns true if anything changed.
+        /// </summary>
+        public bool EnsureCharacterSprites()
+        {
+            bool changed = false;
+            for (int i = 0; i < characters.Count; i++)
+            {
+                if (string.IsNullOrEmpty(characters[i].spriteId))
+                {
+                    characters[i].spriteId = DefaultPlayerSprites[i % DefaultPlayerSprites.Length];
+                    changed = true;
+                }
+            }
+            return changed;
         }
     }
 }

@@ -63,6 +63,7 @@ namespace Tier9.Core
         {
             I = this;
             Account = SaveSystem.Load() ?? AccountState.CreateNew();
+            if (Account.EnsureCharacterSprites()) SaveSystem.Save(Account);
         }
 
         void Start()

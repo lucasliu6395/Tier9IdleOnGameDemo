@@ -149,6 +149,22 @@ namespace Tier9.Tests
         }
 
         [Test]
+        public void EnsureCharacterSprites_HealsEmptyLeavesSet()
+        {
+            var acc = AccountState.CreateNew();
+            acc.characters.Add(AccountState.CreateCharacter("Auto"));            // defaulted at creation
+            acc.characters.Add(new CharacterState { name = "OldSave", spriteId = "" }); // pre-picker save
+            acc.characters.Add(new CharacterState { name = "Chosen", spriteId = "player_c" });
+
+            bool changed = acc.EnsureCharacterSprites();
+            Assert.IsTrue(changed, "an empty spriteId should be healed");
+            foreach (var ch in acc.characters)
+                Assert.IsTrue(ch.spriteId.StartsWith("player_"), $"{ch.name} body must be a player sprite, got '{ch.spriteId}'");
+            Assert.AreEqual("player_c", acc.characters[2].spriteId, "an existing choice is preserved");
+            Assert.IsFalse(acc.EnsureCharacterSprites(), "running again changes nothing");
+        }
+
+        [Test]
         public void ContentDatabase_ReferencesAreValid()
         {
             foreach (var z in ContentDatabase.Zones)
