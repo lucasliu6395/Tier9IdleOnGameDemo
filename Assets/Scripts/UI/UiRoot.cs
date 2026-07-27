@@ -41,6 +41,7 @@ namespace Tier9.UI
             ("world", "World"),
             ("skills", "Skills"),
             ("town", "Town"),
+            ("items", "Items"),
             ("character", "Character"),
         };
         string _openMenu;
@@ -69,6 +70,7 @@ namespace Tier9.UI
             _screens["world"] = new WorldScreen();
             _screens["skills"] = new SkillsScreen();
             _screens["town"] = new TownScreen();
+            _screens["items"] = new InventoryScreen();
             _screens["character"] = new CharacterScreen();
 
             BuildChrome();
