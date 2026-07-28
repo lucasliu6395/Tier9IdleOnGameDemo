@@ -15,6 +15,7 @@ namespace Tier9.World
         double _hp;
         int _dir = 1;
         float _flash;
+        bool _dead;
 
         Rigidbody2D _rb;
         BoxCollider2D _bodyCol;
@@ -131,6 +132,10 @@ namespace Tier9.World
 
         public void TakeHit(double damage, int fromFacing)
         {
+            // Enemies carry a body + trigger collider, so one swing's OverlapBox can report
+            // the same enemy twice; ignore hits once dead so a kill counts (and respawns) once.
+            if (_dead) return;
+
             _hp -= damage;
             _flash = 1f;
             UpdateHpBar();
@@ -140,6 +145,7 @@ namespace Tier9.World
 
             if (_hp <= 0)
             {
+                _dead = true;
                 WorldRunner.I.OnEnemyKilled(_def, transform.position);
                 _map.ScheduleRespawn(_def, _spawnX);
                 Destroy(gameObject);

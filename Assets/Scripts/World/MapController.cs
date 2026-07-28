@@ -16,9 +16,13 @@ namespace Tier9.World
         Camera _cam;
         float _camHalfWidth;
 
+        int _enemyCap;
+        int _aliveEnemies;
+
         public void Build(MapDef def, CharacterState ch, float playerSpawnX)
         {
             Def = def;
+            _enemyCap = def.enemyCount;
 
             BuildGroundBox(0, def.length);
             foreach (var p in def.platforms) BuildPlatform(p);
@@ -104,14 +108,17 @@ namespace Tier9.World
 
         public void SpawnEnemy(MonsterDef mon, float x)
         {
+            if (_aliveEnemies >= _enemyCap) return;   // hard cap on concurrent enemies
             var go = new GameObject("Enemy_" + mon.id);
             go.transform.SetParent(transform, false);
             go.transform.position = new Vector3(x, 1.5f, 0);
             go.AddComponent<EnemyController>().Init(mon, this, x);
+            _aliveEnemies++;
         }
 
         public void ScheduleRespawn(MonsterDef mon, float x)
         {
+            _aliveEnemies = Mathf.Max(0, _aliveEnemies - 1);   // this enemy just died
             StartCoroutine(RespawnAfter(mon, x, mon.isBoss ? 10f : 3f));
         }
 
