@@ -34,6 +34,9 @@ namespace Tier9.World
         float _lastHurtTime = -99f;
         float _invulnUntil;
         float _swingPunch;
+        float _lunge;
+        CharacterAnimator _anim;
+        string _animId;
 
         public double CurrentHp { get; private set; }
         public double MaxHp => _stats == null ? 10 : _stats.maxHp;
@@ -56,9 +59,13 @@ namespace Tier9.World
             spriteGo.transform.SetParent(transform, false);
             spriteGo.transform.localScale = Vector3.one * 1.3f;
             _sr = spriteGo.AddComponent<SpriteRenderer>();
-            // The body is always a player-character sprite, never a class weapon-icon.
-            _sr.sprite = SpriteLibrary.Get(string.IsNullOrEmpty(_ch.spriteId) ? AccountState.DefaultPlayerSprites[0] : _ch.spriteId);
             _sr.sortingOrder = 3;
+
+            // The body is always a player-character sprite, never a class weapon-icon.
+            _animId = string.IsNullOrEmpty(_ch.spriteId) ? AccountState.DefaultPlayerSprites[0] : _ch.spriteId;
+            _sr.sprite = SpriteLibrary.Get(_animId);
+            _anim = spriteGo.AddComponent<CharacterAnimator>();
+            _anim.Setup(_sr, _animId);
 
             RefreshStats();
             CurrentHp = MaxHp;
@@ -78,11 +85,11 @@ namespace Tier9.World
         {
             _stats = StatCalculator.Compute(GameManager.I.Account, _ch);
             if (CurrentHp > MaxHp) CurrentHp = MaxHp;
-            // Reflect a live appearance change (Character tab) on the world body.
-            if (_sr != null)
+            // Reflect a live appearance change (Character tab): reload the animation set.
+            if (_anim != null)
             {
                 var id = string.IsNullOrEmpty(_ch.spriteId) ? AccountState.DefaultPlayerSprites[0] : _ch.spriteId;
-                _sr.sprite = SpriteLibrary.Get(id);
+                if (id != _animId) { _anim.Setup(_sr, id); _animId = id; }
             }
         }
 
@@ -116,16 +123,23 @@ namespace Tier9.World
 
             if (interactPressed) TryInteract();
 
+            // Locomotion animation state
+            string clip = !grounded
+                ? (_rb.linearVelocity.y > 0.1f ? "jump" : "fall")
+                : (Mathf.Abs(move) > 0.01f ? "run" : "idle");
+            _anim.SetState(clip);
+
             // Passive regen when unhurt for a while
             if (Time.time - _lastHurtTime > RegenDelay && CurrentHp < MaxHp)
                 CurrentHp = Math.Min(MaxHp, CurrentHp + MaxHp * RegenPerSecond * Time.deltaTime);
 
-            // Swing/hurt feedback
-            if (_swingPunch > 0f)
-            {
-                _swingPunch -= Time.deltaTime * 5f;
-                _sr.transform.localScale = Vector3.one * (1.3f + 0.25f * Mathf.Max(0, _swingPunch));
-            }
+            // Swing feedback: a quick forward lunge + scale pop (animator owns the frames)
+            if (_lunge > 0f) _lunge -= Time.deltaTime * 6f;
+            if (_swingPunch > 0f) _swingPunch -= Time.deltaTime * 5f;
+            float lunge = Mathf.Max(0f, _lunge);
+            _sr.transform.localPosition = new Vector3(_facing * 0.28f * lunge, 0f, 0f);
+            _sr.transform.localScale = Vector3.one * (1.3f + 0.12f * Mathf.Max(0f, _swingPunch));
+
             _sr.color = Time.time < _invulnUntil && Mathf.PingPong(Time.time * 8f, 1f) > 0.5f
                 ? new Color(1f, 1f, 1f, 0.45f)
                 : Color.white;
@@ -149,6 +163,8 @@ namespace Tier9.World
         {
             _attackTimer = AttackCooldown;
             _swingPunch = 1f;
+            _lunge = 1f;
+            SlashVfx.Spawn((Vector2)transform.position + new Vector2(_facing * 0.95f, 0.25f), _facing);
             Vector2 center = (Vector2)transform.position + new Vector2(_facing * 0.95f, 0.25f);
             var hits = Physics2D.OverlapBoxAll(center, new Vector2(1.9f, 1.5f), 0f);
             foreach (var hit in hits)
